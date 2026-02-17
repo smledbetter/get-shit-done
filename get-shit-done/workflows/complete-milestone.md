@@ -458,6 +458,16 @@ ls .planning/RETROSPECTIVE.md 2>/dev/null
 3. From UAT.md files: Extract test results, issues found
 4. From git log: Count commits, calculate timeline
 5. From the milestone work: Reflect on what worked and what didn't
+6. **From token metrics:** Query verified token data for the milestone:
+
+```bash
+METRICS=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs metrics milestone "${VERSION}" --raw 2>/dev/null || echo '{}')
+```
+
+Also save a milestone snapshot for the permanent record:
+```bash
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs metrics milestone-snapshot "${VERSION}" 2>/dev/null || true
+```
 
 **Write the milestone section:**
 
@@ -481,6 +491,21 @@ ls .planning/RETROSPECTIVE.md 2>/dev/null
 
 ### Key Lessons
 {Specific, actionable takeaways}
+
+### Cost Observations
+{If METRICS JSON contains `totals`, populate with verified data:}
+- **API calls:** {totals.api_calls} across {phase_count} phases
+- **Total tokens:** {totals.tokens.total} ({totals.efficiency.new_work_pct}% new work, rest cache reads)
+- **New work tokens:** {totals.tokens.new_work} (the actual thinking/coding)
+- **Cache efficiency:** {totals.efficiency.cache_ratio}x (cache read / new work)
+- **Model mix:** {for each model in totals.models: "{model}: {pct}%"}
+{If METRICS unavailable: use template defaults — "Model mix: {X}% opus..."}
+
+### Verified Token Usage
+{If METRICS JSON has per-phase data, populate the table from templates/retrospective.md}
+
+### Token Efficiency
+{If METRICS JSON has per-phase data, populate the efficiency table}
 ```
 
 **Update cross-milestone trends:**
@@ -489,7 +514,7 @@ If the "## Cross-Milestone Trends" section exists, update the tables with new da
 
 **Commit:**
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: update retrospective for v${VERSION}" --files .planning/RETROSPECTIVE.md
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: update retrospective for v${VERSION}" --files .planning/RETROSPECTIVE.md .planning/metrics/milestone-*.json
 ```
 
 </step>

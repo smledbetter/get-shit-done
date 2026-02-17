@@ -32,6 +32,21 @@
 - Sessions: {count}
 - Notable: {efficiency observation}
 
+### Verified Token Usage
+
+*Data from `.planning/metrics/` snapshots — verifiable against `~/.claude/projects/` JSONL session logs.*
+
+| Phase | API Calls | Input | Output | Cache Read | Cache Create | Total | New Work |
+|-------|-----------|-------|--------|------------|--------------|-------|----------|
+| {N}   | {calls}   | {in}  | {out}  | {cr}       | {cc}         | {tot} | {nw}     |
+| **TOTAL** | | | | | | | |
+
+### Token Efficiency
+
+| Phase | New Work/Commit | Sonnet+Haiku % | Cache Ratio | New Work % |
+|-------|----------------|----------------|-------------|------------|
+| {N}   | {tokens/commit} | {delegation%}  | {ratio}x    | {nw_pct}%  |
+
 ---
 
 ## Cross-Milestone Trends
@@ -47,6 +62,12 @@
 | Milestone | Tests | Coverage | Zero-Dep Additions |
 |-----------|-------|----------|-------------------|
 | v{X} | {N} | {Y}% | {count} |
+
+### Cross-Milestone Token Trends
+
+| Milestone | Total Tokens | New Work | Cache % | Opus % | Sonnet % | Haiku % |
+|-----------|-------------|----------|---------|--------|----------|---------|
+| v{X}      | {total}     | {nw}     | {c_pct} | {o%}   | {s%}     | {h%}    |
 
 ### Top Lessons (Verified Across Milestones)
 

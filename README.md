@@ -65,6 +65,7 @@ The lessons from that build:
 | Specialized agent roles produce better output | **Skill System** — PM, UX, Security, and Production Engineer advisory perspectives |
 | Agents need type contracts, not a codebase to explore | **Interface-First Planning** — planner extracts interfaces so executors get blueprints |
 | Past mistakes should inform future planning | **Living Retrospective** — what worked/didn't feeds into the next milestone's planner |
+| Token spend was invisible until after the fact | **Token Metrics** — verified token counts, cache efficiency, model mix per phase/milestone |
 | 4 phases × 2+ agents each is often too many | **Consolidated Workflow** — 3 phases, ~50% fewer agent spawns, same quality |
 | Running phases one at a time is tedious | **Sprint** — `/gsd:sprint` runs all remaining phases unattended with failure recovery |
 
@@ -522,6 +523,42 @@ The output feeds directly into `/gsd:plan-phase`. Custom skills can be added to 
 
 ---
 
+### Token Metrics
+
+```
+/gsd:metrics
+```
+
+**Know exactly where your tokens go.**
+
+GSD parses Claude Code's JSONL session logs — the same files Claude writes for every API call — and maps each call to a phase using git commit timestamps. No estimation, no self-reporting. Verifiable data from the source.
+
+**What gets tracked:**
+- **Token breakdown** — input, output, cache read, cache creation per phase
+- **Cache efficiency** — ratio of cache reads to new work (higher = better context reuse)
+- **Model mix** — opus/sonnet/haiku distribution and cost efficiency
+- **New work %** — actual thinking vs context re-loading (typically 4-8% is new work)
+
+**When it runs:**
+- **Automatically** after each phase — snapshots saved to `.planning/metrics/phase-{N}.json`
+- **Automatically** at milestone completion — aggregated into RETROSPECTIVE.md with verified tables
+- **On demand** — `/gsd:metrics` for current status at any time
+
+**Why it matters:**
+
+Building [Weaveto.do](https://github.com/smledbetter/Weaveto.do) with GSD produced 461 million tokens across 6,424 API calls — but 95.7% were cache reads. Only 20 million tokens were actual new work. The model mix (27% opus, 56% sonnet, 17% haiku) was the biggest cost lever. Without metrics, you're optimizing blind.
+
+Each milestone's retrospective now includes verified token data alongside what worked and what didn't. The planner reads this, so the next milestone benefits from concrete efficiency lessons — not vibes.
+
+```bash
+# CLI access for scripting and verification
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs metrics project     # lifetime totals
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs metrics phase 3     # single phase
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs metrics milestone   # current milestone
+```
+
+---
+
 ## Why It Works
 
 ### Context Engineering
@@ -540,6 +577,7 @@ GSD handles it for you:
 | `PLAN.md` | Atomic task with XML structure, verification steps |
 | `SUMMARY.md` | What happened, what changed, committed to history |
 | `RETROSPECTIVE.md` | What worked and what didn't — feeds into future planning |
+| `metrics/` | Token efficiency snapshots per phase/milestone — verifiable against session logs |
 | `SPRINT-REPORT.md` | Per-phase results from last sprint run |
 | `SPRINT-STATE.json` | Sprint checkpoint state (enables resume, cleaned up on success) |
 | `skills/` | Advisory role definitions (PM, UX, Security, Prod Eng) |
@@ -672,6 +710,7 @@ You're never locked in. The system adapts.
 | `/gsd:set-profile <profile>` | Switch model profile (quality/balanced/budget) |
 | `/gsd:add-todo [desc]` | Capture idea for later |
 | `/gsd:check-todos` | List pending todos |
+| `/gsd:metrics` | Token efficiency metrics — per phase, milestone, or project |
 | `/gsd:debug [desc]` | Systematic debugging with persistent state |
 | `/gsd:quick [--full]` | Execute ad-hoc task with GSD guarantees (`--full` adds plan-checking and verification) |
 | `/gsd:health [--repair]` | Validate `.planning/` directory integrity, auto-repair with `--repair` |
