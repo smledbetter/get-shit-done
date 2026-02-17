@@ -385,7 +385,15 @@ That's it. One command runs every remaining phase — discuss, plan, execute, ve
 
 ---
 
-Each approach gives you the same quality. Manual gives the most control — you shape each phase interactively. Sprint gives the most automation — you walk away and come back to results. Consolidated is the middle ground.
+**Which mode should you use?**
+
+| Mode | Best when | You get |
+|------|-----------|---------|
+| **Manual** | You have a vague idea and want to discover what you're building as you go. You want to shape each phase, change direction, and learn from intermediate results. | Full control. You guide every phase interactively — discuss captures your evolving vision, and you can pivot between phases as you learn what actually works. |
+| **Consolidated** | You have a pretty clear idea but want the opportunity to course-correct after each phase. You know the destination but not every turn. | Fewer steps per phase, but you're still in the loop. After each phase completes you can review results, adjust the approach, and decide whether to continue or change direction before the next one. |
+| **Sprint** | You're confident that your PRD clearly captures the full intent of the product. The requirements are locked, the scope is defined, and you want the system to execute end-to-end. | Maximum automation. Walk away, come back to a completed milestone or a clear report of what failed. Best paired with `--prd` and quality gates so the system has everything it needs to build and verify without you. |
+
+Not sure which fits? Open 3 terminal windows and try all 3 modes on the same project at the same time. Build the same thing three ways and get a feel for how much control you want. That's the fastest way to find your workflow.
 
 At milestone completion, a **living retrospective** captures what worked and what didn't — the planner reads this for your next milestone so you don't repeat the same mistakes.
 
