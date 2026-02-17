@@ -324,19 +324,69 @@ If everything passes, you move on. If something's broken, you don't manually deb
 
 ### 6. Repeat → Complete → Next Milestone
 
+You have three ways to get through your phases:
+
+**Manual (most control):**
 ```
-/gsd:discuss-phase 2
-/gsd:plan-phase 2
-/gsd:execute-phase 2
-/gsd:verify-work 2
-...
+/clear → /gsd:discuss-phase 2
+/clear → /gsd:plan-phase 2
+/clear → /gsd:execute-phase 2
+/clear → /gsd:verify-work 2
+... repeat for each phase ...
 /gsd:complete-milestone
-/gsd:new-milestone
 ```
 
-Loop **discuss → plan → execute → verify** until milestone complete. Or use `/gsd:consolidated-phase` for fewer steps.
+**Consolidated (fewer steps per phase):**
+```
+/clear → /gsd:consolidated-phase 2
+/clear → /gsd:consolidated-phase 3
+... repeat for each phase ...
+/gsd:complete-milestone
+```
 
-Each phase gets your input (discuss), proper research (plan), clean execution (execute), and human verification (verify). Context stays fresh. Quality stays high. At milestone completion, a **living retrospective** captures what worked and what didn't — the planner reads this for your next milestone so you don't repeat the same mistakes.
+**Sprint (fully unattended):**
+```
+/gsd:sprint
+```
+
+That's it. One command runs every remaining phase — discuss, plan, execute, verify — automatically. Come back to a completed milestone or a report of what failed.
+
+**Using sprint step by step:**
+
+1. **Preview first** — See what will run before committing:
+   ```
+   /gsd:sprint --dry-run
+   ```
+   This shows the phase list, mode, and failure behavior without executing anything.
+
+2. **Run the sprint** — Start unattended execution:
+   ```
+   /gsd:sprint
+   ```
+   The system asks for confirmation, then chains through every remaining phase. Each phase goes through the full discuss → plan → execute → verify cycle (or consolidated if enabled).
+
+3. **If a phase fails** — By default the sprint stops and tells you what went wrong. It first tries to fix the problem automatically (gap closure: plan the gaps → execute the fixes → re-verify). If that doesn't work:
+   - Fix the issue manually, then resume: `/gsd:sprint {failed_phase}-{last_phase}`
+   - Or skip failures and keep going: `/gsd:sprint --skip-failures`
+
+4. **Check the report** — When the sprint finishes (or stops), it writes `.planning/SPRINT-REPORT.md` with per-phase pass/fail, quality gate results, and next steps.
+
+5. **Complete the milestone:**
+   ```
+   /gsd:complete-milestone
+   ```
+
+**Sprint tips:**
+- Run a subset: `/gsd:sprint 3-5` runs only phases 3, 4, and 5
+- Fastest path: `/gsd:sprint --consolidated --prd spec.md` skips discuss, uses consolidated workflow
+- Configure default failure behavior in `/gsd:settings` → Sprint so you don't need `--skip-failures` every time
+- Sprint is smart about resuming — if a phase already has plans or context from a previous run, it picks up where it left off
+
+---
+
+Each approach gives you the same quality. Manual gives the most control — you shape each phase interactively. Sprint gives the most automation — you walk away and come back to results. Consolidated is the middle ground.
+
+At milestone completion, a **living retrospective** captures what worked and what didn't — the planner reads this for your next milestone so you don't repeat the same mistakes.
 
 When all phases are done, `/gsd:complete-milestone` archives the milestone and tags the release.
 
