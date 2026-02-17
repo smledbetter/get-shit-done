@@ -2,22 +2,20 @@
 
 # GET SHIT DONE
 
-**A light-weight and powerful meta-prompting, context engineering and spec-driven development system for Claude Code, OpenCode, and Gemini CLI.**
+**A battle-tested fork of [GSD](https://github.com/glittercowboy/get-shit-done) — meta-prompting, context engineering and spec-driven development for Claude Code, OpenCode, and Gemini CLI.**
 
 **Solves context rot — the quality degradation that happens as Claude fills its context window.**
 
-[![npm version](https://img.shields.io/npm/v/get-shit-done-cc?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/get-shit-done-cc)
-[![npm downloads](https://img.shields.io/npm/dm/get-shit-done-cc?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/get-shit-done-cc)
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/5JJgD5svVS)
-[![X (Twitter)](https://img.shields.io/badge/X-@gsd__foundation-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/gsd_foundation)
-[![$GSD Token](https://img.shields.io/badge/$GSD-Dexscreener-1C1C1C?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIgZmlsbD0iIzAwRkYwMCIvPjwvc3ZnPg==&logoColor=00FF00)](https://dexscreener.com/solana/dwudwjvan7bzkw9zwlbyv6kspdlvhwzrqy6ebk8xzxkv)
-[![GitHub stars](https://img.shields.io/github/stars/glittercowboy/get-shit-done?style=for-the-badge&logo=github&color=181717)](https://github.com/glittercowboy/get-shit-done)
+[![GitHub stars](https://img.shields.io/github/stars/smledbetter/get-shit-done?style=for-the-badge&logo=github&color=181717)](https://github.com/smledbetter/get-shit-done)
+[![Upstream](https://img.shields.io/badge/upstream-glittercowboy%2Fget--shit--done-blue?style=for-the-badge&logo=github)](https://github.com/glittercowboy/get-shit-done)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
 
 <br>
 
 ```bash
-npx get-shit-done-cc@latest
+git clone https://github.com/smledbetter/get-shit-done.git
+cd get-shit-done
+node bin/install.js
 ```
 
 **Works on Mac, Windows, and Linux.**
@@ -95,8 +93,12 @@ People who want to describe what they want and have it built correctly — witho
 
 ## Getting Started
 
+This is a fork — install from the repo, not npm.
+
 ```bash
-npx get-shit-done-cc@latest
+git clone https://github.com/smledbetter/get-shit-done.git
+cd get-shit-done
+node bin/install.js
 ```
 
 The installer prompts you to choose:
@@ -107,47 +109,36 @@ Verify with `/gsd:help` inside your chosen runtime.
 
 ### Staying Updated
 
-GSD evolves fast. Update periodically:
+Pull the latest changes and re-run the installer:
 
 ```bash
-npx get-shit-done-cc@latest
+cd get-shit-done
+git pull
+node bin/install.js
 ```
+
+> **Want upstream GSD instead?** The original is available via `npx get-shit-done-cc@latest` from the [upstream repo](https://github.com/glittercowboy/get-shit-done). This fork adds quality gates, PRD express path, skill system, consolidated workflow, and other features not yet in upstream.
 
 <details>
 <summary><strong>Non-interactive Install (Docker, CI, Scripts)</strong></summary>
 
 ```bash
 # Claude Code
-npx get-shit-done-cc --claude --global   # Install to ~/.claude/
-npx get-shit-done-cc --claude --local    # Install to ./.claude/
+node bin/install.js --claude --global   # Install to ~/.claude/
+node bin/install.js --claude --local    # Install to ./.claude/
 
 # OpenCode (open source, free models)
-npx get-shit-done-cc --opencode --global # Install to ~/.config/opencode/
+node bin/install.js --opencode --global # Install to ~/.config/opencode/
 
 # Gemini CLI
-npx get-shit-done-cc --gemini --global   # Install to ~/.gemini/
+node bin/install.js --gemini --global   # Install to ~/.gemini/
 
 # All runtimes
-npx get-shit-done-cc --all --global      # Install to all directories
+node bin/install.js --all --global      # Install to all directories
 ```
 
 Use `--global` (`-g`) or `--local` (`-l`) to skip the location prompt.
 Use `--claude`, `--opencode`, `--gemini`, or `--all` to skip the runtime prompt.
-
-</details>
-
-<details>
-<summary><strong>Development Installation</strong></summary>
-
-Clone the repository and run the installer locally:
-
-```bash
-git clone https://github.com/glittercowboy/get-shit-done.git
-cd get-shit-done
-node bin/install.js --claude --local
-```
-
-Installs to `./.claude/` for testing modifications before contributing.
 
 </details>
 
@@ -711,18 +702,20 @@ This prevents Claude from reading these files entirely, regardless of what comma
 
 **Commands not working as expected?**
 - Run `/gsd:help` to verify installation
-- Re-run `npx get-shit-done-cc` to reinstall
+- Re-run `node bin/install.js` from your clone to reinstall
 
 **Updating to the latest version?**
 ```bash
-npx get-shit-done-cc@latest
+cd get-shit-done
+git pull
+node bin/install.js
 ```
 
 **Using Docker or containerized environments?**
 
 If file reads fail with tilde paths (`~/.claude/...`), set `CLAUDE_CONFIG_DIR` before installing:
 ```bash
-CLAUDE_CONFIG_DIR=/home/youruser/.claude npx get-shit-done-cc --global
+CLAUDE_CONFIG_DIR=/home/youruser/.claude node bin/install.js --global
 ```
 This ensures absolute paths are used instead of `~` which may not expand correctly in containers.
 
@@ -732,38 +725,37 @@ To remove GSD completely:
 
 ```bash
 # Global installs
-npx get-shit-done-cc --claude --global --uninstall
-npx get-shit-done-cc --opencode --global --uninstall
+node bin/install.js --claude --global --uninstall
+node bin/install.js --opencode --global --uninstall
 
 # Local installs (current project)
-npx get-shit-done-cc --claude --local --uninstall
-npx get-shit-done-cc --opencode --local --uninstall
+node bin/install.js --claude --local --uninstall
+node bin/install.js --opencode --local --uninstall
 ```
 
 This removes all GSD commands, agents, hooks, and settings while preserving your other configurations.
 
 ---
 
-## Community Ports
+## Upstream & Community
 
-OpenCode and Gemini CLI are now natively supported via `npx get-shit-done-cc`.
+This fork is based on [glittercowboy/get-shit-done](https://github.com/glittercowboy/get-shit-done) — the original GSD system available via `npx get-shit-done-cc@latest`. This fork adds features battle-tested while building [Weaveto.do](https://github.com/smledbetter/Weaveto.do).
 
-These community ports pioneered multi-runtime support:
-
-| Project | Platform | Description |
-|---------|----------|-------------|
-| [gsd-opencode](https://github.com/rokicool/gsd-opencode) | OpenCode | Original OpenCode adaptation |
-| gsd-gemini (archived) | Gemini CLI | Original Gemini adaptation by uberfuzzy |
+| Project | Description |
+|---------|-------------|
+| [glittercowboy/get-shit-done](https://github.com/glittercowboy/get-shit-done) | Original upstream — install via npm |
+| [gsd-opencode](https://github.com/rokicool/gsd-opencode) | Original OpenCode adaptation |
+| gsd-gemini (archived) | Original Gemini adaptation by uberfuzzy |
 
 ---
 
 ## Star History
 
-<a href="https://star-history.com/#glittercowboy/get-shit-done&Date">
+<a href="https://star-history.com/#smledbetter/get-shit-done&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=glittercowboy/get-shit-done&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=glittercowboy/get-shit-done&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=glittercowboy/get-shit-done&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=smledbetter/get-shit-done&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=smledbetter/get-shit-done&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=smledbetter/get-shit-done&type=Date" />
  </picture>
 </a>
 
