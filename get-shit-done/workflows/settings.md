@@ -31,6 +31,7 @@ Parse current values (default to `true` if not present):
 - `workflow.consolidated` — use consolidated 3-phase workflow (default: `false`)
 - `model_profile` — which model each agent uses (default: `balanced`)
 - `git.branching_strategy` — branching approach (default: `"none"`)
+- `sprint.skip_on_failure` — skip failed phases during sprint (default: `false`)
 </step>
 
 <step name="present_settings">
@@ -134,6 +135,22 @@ AskUserQuestion([
 ```
 
 Parse the comma-separated response into an array of trimmed command strings.
+
+**Sprint failure behavior:**
+
+```
+AskUserQuestion([
+  {
+    question: "During /gsd:sprint, what should happen when a phase fails?",
+    header: "Sprint",
+    multiSelect: false,
+    options: [
+      { label: "Stop (Recommended)", description: "Stop the sprint so you can fix the issue" },
+      { label: "Skip & Continue", description: "Log the failure and continue to the next phase" }
+    ]
+  }
+])
+```
 </step>
 
 <step name="update_config">
@@ -157,6 +174,9 @@ Merge new settings into existing config.json:
     "enabled": true/false,
     "commands": ["cmd1", "cmd2", ...],
     "fail_action": "warn" | "block"
+  },
+  "sprint": {
+    "skip_on_failure": true/false
   }
 }
 ```
@@ -230,6 +250,7 @@ Display:
 | Git Branching        | {None/Per Phase/Per Milestone} |
 | Quality Gates        | {Off/Warn/Block} |
 | Gate Commands        | {comma-separated list or "—"} |
+| Sprint on Failure    | {Stop/Skip & Continue} |
 | Saved as Defaults    | {Yes/No} |
 
 These settings apply to future /gsd:plan-phase and /gsd:execute-phase runs.
@@ -246,7 +267,7 @@ Quick commands:
 
 <success_criteria>
 - [ ] Current config read
-- [ ] User presented with 8 settings (profile + 4 workflow toggles + consolidated mode + git branching + quality gates)
+- [ ] User presented with 9 settings (profile + 4 workflow toggles + consolidated mode + git branching + quality gates + sprint behavior)
 - [ ] Config updated with model_profile, workflow, git, and quality_gates sections
 - [ ] User offered to save as global defaults (~/.gsd/defaults.json)
 - [ ] Changes confirmed to user

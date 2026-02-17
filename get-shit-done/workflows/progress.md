@@ -377,6 +377,7 @@ If `CONSOLIDATED` is `true`:
 
 **Also available:**
 - `/gsd:discuss-phase {Z+1}` — gather context first (separate step)
+- `/gsd:sprint {Z+1}-{last}` — run all remaining phases unattended
 - `/gsd:verify-work {Z}` — user acceptance test before continuing
 
 ---
@@ -400,6 +401,7 @@ Otherwise:
 
 **Also available:**
 - `/gsd:plan-phase {Z+1}` — skip discussion, plan directly
+- `/gsd:sprint {Z+1}-{last}` — run all remaining phases unattended
 - `/gsd:verify-work {Z}` — user acceptance test before continuing
 
 ---

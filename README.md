@@ -66,6 +66,7 @@ The lessons from that build:
 | Agents need type contracts, not a codebase to explore | **Interface-First Planning** — planner extracts interfaces so executors get blueprints |
 | Past mistakes should inform future planning | **Living Retrospective** — what worked/didn't feeds into the next milestone's planner |
 | 4 phases × 2+ agents each is often too many | **Consolidated Workflow** — 3 phases, ~50% fewer agent spawns, same quality |
+| Running phases one at a time is tedious | **Sprint** — `/gsd:sprint` runs all remaining phases unattended with failure recovery |
 
 These aren't theoretical improvements. They came from shipping a real product with GSD and fixing the things that slowed us down. The core insight from the article: **the bottleneck isn't AI capability — it's coordination.** Every feature above reduces coordination overhead.
 
@@ -390,6 +391,39 @@ Enable via `/gsd:settings` → Workflow → Consolidated.
 
 ---
 
+### Sprint
+
+```
+/gsd:sprint
+```
+
+**Run all remaining phases unattended.**
+
+Sprint wraps GSD's existing auto-advance in a milestone-level orchestrator. One command, walk away, come back to a completed milestone (or a clear report of what failed).
+
+```bash
+/gsd:sprint                              # all remaining phases
+/gsd:sprint 3-5                          # just phases 3 through 5
+/gsd:sprint --dry-run                    # preview without executing
+/gsd:sprint --skip-failures              # log failures, keep going
+/gsd:sprint --consolidated --prd spec.md # fastest possible path
+```
+
+**What happens under the hood:**
+1. Determines which phases to run from ROADMAP.md
+2. Enables auto-advance temporarily
+3. Chains discuss → plan → execute → verify for each phase
+4. On verification gaps: automatically attempts gap closure (plan gaps → execute gaps → re-verify)
+5. On failure: stops (default) or skips and continues (`--skip-failures`)
+6. Writes `SPRINT-REPORT.md` with per-phase results
+7. Restores original config
+
+Sprint does not cross milestone boundaries. Configure default failure behavior via `/gsd:settings`.
+
+**Creates:** `.planning/SPRINT-REPORT.md`
+
+---
+
 ### Advisory Consensus
 
 ```
@@ -427,6 +461,7 @@ GSD handles it for you:
 | `PLAN.md` | Atomic task with XML structure, verification steps |
 | `SUMMARY.md` | What happened, what changed, committed to history |
 | `RETROSPECTIVE.md` | What worked and what didn't — feeds into future planning |
+| `SPRINT-REPORT.md` | Per-phase results from last sprint run |
 | `skills/` | Advisory role definitions (PM, UX, Security, Prod Eng) |
 | `todos/` | Captured ideas and tasks for later work |
 
@@ -513,6 +548,7 @@ You're never locked in. The system adapts.
 
 | Command | What it does |
 |---------|--------------|
+| `/gsd:sprint [range]` | Run all remaining phases (or a range) unattended |
 | `/gsd:consolidated-phase <N>` | Full phase in 3 steps: consensus+plan → execute+gate → ship |
 | `/gsd:advisory-consensus <N>` | Multi-perspective advisory feedback in one agent pass |
 
@@ -614,6 +650,14 @@ Use `/gsd:settings` to toggle these, or override per-invocation:
 |---------|---------|------------------|
 | `parallelization.enabled` | `true` | Run independent plans simultaneously |
 | `planning.commit_docs` | `true` | Track `.planning/` in git |
+
+### Sprint
+
+| Setting | Options | Default | What it does |
+|---------|---------|---------|--------------|
+| `sprint.skip_on_failure` | `true`, `false` | `false` | Skip failed phases and continue (vs stop on first failure) |
+
+Override per-invocation with `--skip-failures`.
 
 ### Quality Gates
 
