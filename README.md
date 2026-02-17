@@ -46,7 +46,7 @@ The original GSD is available at [glittercowboy/get-shit-done](https://github.co
 
 ## Why This Fork
 
-I used GSD to build [Weaveto.do](https://github.com/smledbetter/Weaveto.do) — 12,000 lines of TypeScript, 491 tests, end-to-end encryption. GSD's core workflow is excellent. But building a non-trivial project with it exposed friction points that the standard workflow doesn't address yet. This fork adds the features I needed.
+I used GSD to build [Weaveto.do](https://github.com/smledbetter/Weaveto.do) — 12,000 lines of TypeScript, 491 tests, end-to-end encryption. GSD's core workflow is excellent. But building a full project with it exposed friction points that the standard workflow doesn't address yet. This fork adds the features I needed.
 
 ---
 
@@ -69,7 +69,7 @@ The lessons from that build:
 | 4 phases × 2+ agents each is often too many | **Consolidated Workflow** — 3 phases, ~50% fewer agent spawns, same quality |
 | Running phases one at a time is tedious | **Sprint** — `/gsd:sprint` runs all remaining phases unattended with failure recovery |
 
-These came from building a non-trivial project with GSD and fixing the things that slowed us down. The core insight from the article: **the bottleneck isn't AI capability — it's coordination.** Every feature above reduces coordination overhead.
+These came from building a full project with GSD and fixing the things that slowed us down. The core insight from the article: **the bottleneck isn't AI capability — it's coordination.** Every feature above reduces coordination overhead.
 
 ---
 
