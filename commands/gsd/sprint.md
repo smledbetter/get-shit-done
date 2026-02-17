@@ -16,13 +16,16 @@ allowed-tools:
 <objective>
 Sprint: run multiple phases end-to-end without manual intervention.
 
-Wraps GSD's existing auto-advance machinery in a milestone-level orchestrator that:
+Uses checkpoint-and-respawn to keep the context window fresh:
 1. Determines which phases to run (all remaining or a specified range)
-2. Chains phases via auto-advance (discuss → plan → execute → transition)
-3. Handles failures — retry gap closure or skip and continue
-4. Produces a SPRINT-REPORT.md at the end
+2. Runs ONE phase (discuss → plan → execute → verify via auto-advance)
+3. Writes state to SPRINT-STATE.json
+4. Spawns a fresh copy of itself and exits
+5. The new instance reads state and continues from the next phase
+6. Repeats until all phases done, then writes SPRINT-REPORT.md
 
-**This is not a new workflow.** It's an orchestrator that invokes the existing phase workflows with `--auto` and adds failure recovery + reporting on top.
+Each orchestrator instance handles exactly one phase — zero context accumulation.
+If a state file exists from a previous run, the sprint resumes automatically.
 </objective>
 
 <execution_context>
@@ -39,6 +42,8 @@ Arguments: $ARGUMENTS
 - `--skip-failures` — Log blocked phases and continue to next (default: stop on first failure)
 - `--consolidated` — Use consolidated workflow for each phase (overrides config)
 - `--prd <file>` — Pass PRD to skip discuss phase for all phases in the sprint
+
+**Resume:** If `.planning/SPRINT-STATE.json` exists, the sprint resumes from where it left off.
 
 @.planning/ROADMAP.md
 @.planning/STATE.md

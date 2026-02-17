@@ -366,7 +366,7 @@ That's it. One command runs every remaining phase — discuss, plan, execute, ve
    The system asks for confirmation, then chains through every remaining phase. Each phase goes through the full discuss → plan → execute → verify cycle (or consolidated if enabled).
 
 3. **If a phase fails** — By default the sprint stops and tells you what went wrong. It first tries to fix the problem automatically (gap closure: plan the gaps → execute the fixes → re-verify). If that doesn't work:
-   - Fix the issue manually, then resume: `/gsd:sprint {failed_phase}-{last_phase}`
+   - Fix the issue manually, then resume: `/gsd:sprint` (it reads `SPRINT-STATE.json` and picks up where it left off)
    - Or skip failures and keep going: `/gsd:sprint --skip-failures`
 
 4. **Check the report** — When the sprint finishes (or stops), it writes `.planning/SPRINT-REPORT.md` with per-phase pass/fail, quality gate results, and next steps.
@@ -381,6 +381,7 @@ That's it. One command runs every remaining phase — discuss, plan, execute, ve
 - Fastest path: `/gsd:sprint --consolidated --prd spec.md` skips discuss, uses consolidated workflow
 - Configure default failure behavior in `/gsd:settings` → Sprint so you don't need `--skip-failures` every time
 - Sprint is smart about resuming — if a phase already has plans or context from a previous run, it picks up where it left off
+- Context stays fresh throughout — the sprint respawns itself after each phase so it never degrades, even across 10+ phases
 
 ---
 
@@ -462,15 +463,35 @@ Sprint wraps GSD's existing auto-advance in a milestone-level orchestrator. One 
 **What happens under the hood:**
 1. Determines which phases to run from ROADMAP.md
 2. Enables auto-advance temporarily
-3. Chains discuss → plan → execute → verify for each phase
-4. On verification gaps: automatically attempts gap closure (plan gaps → execute gaps → re-verify)
-5. On failure: stops (default) or skips and continues (`--skip-failures`)
-6. Writes `SPRINT-REPORT.md` with per-phase results
-7. Restores original config
+3. Runs **one phase** (discuss → plan → execute → verify)
+4. Writes state to `SPRINT-STATE.json`
+5. **Spawns a fresh copy of itself and exits** — zero context accumulation
+6. The new instance reads state and continues from the next phase
+7. On verification gaps: automatically attempts gap closure
+8. On failure: stops (default) or skips and continues (`--skip-failures`)
+9. When done: writes `SPRINT-REPORT.md` and restores original config
+
+**Why checkpoint-and-respawn?**
+
+GSD's core insight is that context rot kills quality. The sprint orchestrator faces the same problem — if it runs 8 phases in one context window, it's degraded by phase 6. The fix is the same pattern GSD uses everywhere else: externalize state to a file, spawn a fresh context.
+
+```
+Sprint Instance 1          Sprint Instance 2          Sprint Instance 3
+┌─────────────────┐        ┌─────────────────┐        ┌─────────────────┐
+│ Read state       │        │ Read state       │        │ Read state       │
+│ Run Phase 1      │        │ Run Phase 2      │        │ Run Phase 3      │
+│ Write state      │───→    │ Write state      │───→    │ Write state      │
+│ Spawn fresh self │        │ Spawn fresh self │        │ Write report     │
+│ Exit             │        │ Exit             │        │ Done             │
+└─────────────────┘        └─────────────────┘        └─────────────────┘
+     200k fresh                  200k fresh                 200k fresh
+```
+
+Each orchestrator instance handles exactly one phase. State lives in `SPRINT-STATE.json`, not in the context window. If the sprint is interrupted for any reason, running `/gsd:sprint` again picks up from the state file automatically.
 
 Sprint does not cross milestone boundaries. Configure default failure behavior via `/gsd:settings`.
 
-**Creates:** `.planning/SPRINT-REPORT.md`
+**Creates:** `.planning/SPRINT-REPORT.md`, `.planning/SPRINT-STATE.json` (cleaned up on success)
 
 ---
 
@@ -512,6 +533,7 @@ GSD handles it for you:
 | `SUMMARY.md` | What happened, what changed, committed to history |
 | `RETROSPECTIVE.md` | What worked and what didn't — feeds into future planning |
 | `SPRINT-REPORT.md` | Per-phase results from last sprint run |
+| `SPRINT-STATE.json` | Sprint checkpoint state (enables resume, cleaned up on success) |
 | `skills/` | Advisory role definitions (PM, UX, Security, Prod Eng) |
 | `todos/` | Captured ideas and tasks for later work |
 
