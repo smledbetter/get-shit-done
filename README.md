@@ -26,51 +26,37 @@ node bin/install.js
 
 <br>
 
-*"If you know clearly what you want, this WILL build it for you. No bs."*
-
-*"I've done SpecKit, OpenSpec and Taskmaster — this has produced the best results for me."*
-
-*"By far the most powerful addition to my Claude Code. Nothing over-engineered. Literally just gets shit done."*
-
-<br>
-
-**Trusted by engineers at Amazon, Google, Shopify, and Webflow.**
-
-[Why I Built This](#why-i-built-this) · [Battle-Tested](#battle-tested) · [How It Works](#how-it-works) · [Commands](#commands) · [Why It Works](#why-it-works) · [User Guide](docs/USER-GUIDE.md)
+[About GSD](#about-gsd) · [What This Fork Adds](#what-this-fork-adds) · [How It Works](#how-it-works) · [Commands](#commands) · [Why It Works](#why-it-works) · [User Guide](docs/USER-GUIDE.md)
 
 </div>
 
 ---
 
-## Why I Built This
+## About GSD
 
-I'm a solo developer. I don't write code — Claude Code does.
+GSD was created by [TÂCHES](https://github.com/glittercowboy). In their words:
 
-Other spec-driven development tools exist; BMAD, Speckit... But they all seem to make things way more complicated than they need to be (sprint ceremonies, story points, stakeholder syncs, retrospectives, Jira workflows) or lack real big picture understanding of what you're building. I'm not a 50-person software company. I don't want to play enterprise theater. I'm just a creative person trying to build great things that work.
+> I'm a solo developer. I don't write code — Claude Code does.
+>
+> Other spec-driven development tools exist; BMAD, Speckit... But they all seem to make things way more complicated than they need to be. I'm not a 50-person software company. I don't want to play enterprise theater. I'm just a creative person trying to build great things that work.
+>
+> So I built GSD. The complexity is in the system, not in your workflow. No enterprise roleplay bullshit. Just an incredibly effective system for building cool stuff consistently using Claude Code.
 
-So I built GSD. The complexity is in the system, not in your workflow. Behind the scenes: context engineering, XML prompt formatting, subagent orchestration, state management. What you see: a few commands that just work.
+The original GSD is available at [glittercowboy/get-shit-done](https://github.com/glittercowboy/get-shit-done) and via `npx get-shit-done-cc@latest`.
 
-The system gives Claude everything it needs to do the work *and* verify it. I trust the workflow. It just does a good job.
+## Why This Fork
 
-That's what this is. No enterprise roleplay bullshit. Just an incredibly effective system for building cool stuff consistently using Claude Code.
-
-— **TÂCHES**
-
----
-
-Vibecoding has a bad reputation. You describe what you want, AI generates code, and you get inconsistent garbage that falls apart at scale.
-
-GSD fixes that. It's the context engineering layer that makes Claude Code reliable. Describe your idea, let the system extract everything it needs to know, and let Claude Code get to work.
+I used GSD to build [Weaveto.do](https://github.com/smledbetter/Weaveto.do) — 12,000 lines of TypeScript, 491 tests, real end-to-end encryption. GSD's core workflow is excellent. But shipping a real product with it exposed friction points that the standard workflow doesn't address yet. This fork adds the features I needed.
 
 ---
 
-## Battle-Tested
+## What This Fork Adds
 
-GSD was used to build [Weaveto.do](https://github.com/smledbetter/Weaveto.do) — a privacy-first, end-to-end encrypted task coordination app. 12,000 lines of TypeScript/Svelte, 491 tests, real cryptography. Built by a solo developer who doesn't write code. The full story: [How I Let Robots Build My Encryption App](https://medium.com/@stevo_actually/how-i-let-robots-build-my-encryption-app-f0a3a39e16d8).
+The full story: [How I Let Robots Build My Encryption App](https://medium.com/@stevo_actually/how-i-let-robots-build-my-encryption-app-f0a3a39e16d8).
 
-That project exposed the friction points in GSD's original workflow. The discuss phase was too slow when you already had a PRD. Manual verification was redundant when you had a real test suite. Four separate phases with 8+ agent spawns was overkill when the work was well-understood.
+The discuss phase was too slow when you already had a PRD. Manual verification was redundant when you had a real test suite. Four separate phases with 8+ agent spawns was overkill when the work was well-understood.
 
-The lessons from that build are now part of GSD:
+The lessons from that build:
 
 | What we learned | What GSD does now |
 |-----------------|-------------------|
