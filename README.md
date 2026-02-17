@@ -38,7 +38,7 @@ npx get-shit-done-cc@latest
 
 **Trusted by engineers at Amazon, Google, Shopify, and Webflow.**
 
-[Why I Built This](#why-i-built-this) · [How It Works](#how-it-works) · [Commands](#commands) · [Why It Works](#why-it-works) · [User Guide](docs/USER-GUIDE.md)
+[Why I Built This](#why-i-built-this) · [Battle-Tested](#battle-tested) · [How It Works](#how-it-works) · [Commands](#commands) · [Why It Works](#why-it-works) · [User Guide](docs/USER-GUIDE.md)
 
 </div>
 
@@ -63,6 +63,27 @@ That's what this is. No enterprise roleplay bullshit. Just an incredibly effecti
 Vibecoding has a bad reputation. You describe what you want, AI generates code, and you get inconsistent garbage that falls apart at scale.
 
 GSD fixes that. It's the context engineering layer that makes Claude Code reliable. Describe your idea, let the system extract everything it needs to know, and let Claude Code get to work.
+
+---
+
+## Battle-Tested
+
+GSD was used to build [Weaveto.do](https://github.com/smledbetter/Weaveto.do) — a privacy-first, end-to-end encrypted task coordination app. 12,000 lines of TypeScript/Svelte, 491 tests, real cryptography. Built by a solo developer who doesn't write code. The full story: [How I Let Robots Build My Encryption App](https://medium.com/@stevo_actually/how-i-let-robots-build-my-encryption-app-f0a3a39e16d8).
+
+That project exposed the friction points in GSD's original workflow. The discuss phase was too slow when you already had a PRD. Manual verification was redundant when you had a real test suite. Four separate phases with 8+ agent spawns was overkill when the work was well-understood.
+
+The lessons from that build are now part of GSD:
+
+| What we learned | What GSD does now |
+|-----------------|-------------------|
+| A PRD makes interactive discussion redundant | **PRD Express Path** — `/gsd:plan-phase --prd spec.md` skips discuss-phase entirely |
+| Real test suites beat manual verification | **Ship-Readiness Gate** — run `npm test`, `tsc`, linters as automated quality gates |
+| Specialized agent roles produce better output | **Skill System** — PM, UX, Security, and Production Engineer advisory perspectives |
+| Agents need type contracts, not a codebase to explore | **Interface-First Planning** — planner extracts interfaces so executors get blueprints |
+| Past mistakes should inform future planning | **Living Retrospective** — what worked/didn't feeds into the next milestone's planner |
+| 4 phases × 2+ agents each is often too many | **Consolidated Workflow** — 3 phases, ~50% fewer agent spawns, same quality |
+
+These aren't theoretical improvements. They came from shipping a real product with GSD and fixing the things that slowed us down. The core insight from the article: **the bottleneck isn't AI capability — it's coordination.** Every feature above reduces coordination overhead.
 
 ---
 
@@ -205,6 +226,8 @@ You approve the roadmap. Now you're ready to build.
 /gsd:discuss-phase 1
 ```
 
+> **Already have a PRD?** Skip this step entirely with `/gsd:plan-phase 1 --prd spec.md`. The system generates CONTEXT.md from your document with all decisions locked. Straight to planning.
+
 **This is where you shape the implementation.**
 
 Your roadmap has a sentence or two per phase. That's not enough context to build something the way *you* imagine it. This step captures your preferences before anything gets researched or planned.
@@ -259,6 +282,8 @@ The system:
 4. **Verifies against goals** — Checks the codebase delivers what the phase promised
 
 Walk away, come back to completed work with clean git history.
+
+If you've configured **quality gates** (test suites, type checkers, linters), they run automatically after verification. Failed gates block or warn depending on your settings — no manual checking required.
 
 **How Wave Execution Works:**
 
@@ -331,9 +356,9 @@ If everything passes, you move on. If something's broken, you don't manually deb
 /gsd:new-milestone
 ```
 
-Loop **discuss → plan → execute → verify** until milestone complete.
+Loop **discuss → plan → execute → verify** until milestone complete. Or use `/gsd:consolidated-phase` for fewer steps.
 
-Each phase gets your input (discuss), proper research (plan), clean execution (execute), and human verification (verify). Context stays fresh. Quality stays high.
+Each phase gets your input (discuss), proper research (plan), clean execution (execute), and human verification (verify). Context stays fresh. Quality stays high. At milestone completion, a **living retrospective** captures what worked and what didn't — the planner reads this for your next milestone so you don't repeat the same mistakes.
 
 When all phases are done, `/gsd:complete-milestone` archives the milestone and tags the release.
 
@@ -366,6 +391,47 @@ Use for: bug fixes, small features, config changes, one-off tasks.
 
 ---
 
+### Consolidated Workflow
+
+```
+/gsd:consolidated-phase 1
+```
+
+**For teams that want fewer agent spawns without sacrificing quality.**
+
+The standard workflow runs 4 phases with 8+ agent spawns per phase. The consolidated workflow collapses this to 3 phases with roughly half the agents:
+
+| Phase | What happens | Agents |
+|-------|-------------|--------|
+| **Consensus + Plan** | One agent loads advisory skills (PM, UX, Security, Prod Eng) and planner role. Produces CONTEXT.md and PLAN.md, then self-verifies. | 1 |
+| **Execute + Gate** | Standard wave-based execution, followed by a ship-readiness gate that combines verification and quality gates. | N + 1 |
+| **Ship** | Orchestrator marks phase complete, commits metadata. | 0 |
+
+Same quality gates. Same goal-backward verification. Fewer round-trips.
+
+Enable via `/gsd:settings` → Workflow → Consolidated.
+
+---
+
+### Advisory Consensus
+
+```
+/gsd:advisory-consensus 1
+```
+
+**Get structured feedback from multiple expert perspectives in one pass.**
+
+Instead of spawning separate agents for each advisory role, one agent loads all skill perspectives and produces a unified CONTEXT.md:
+
+- **Product Manager** — User stories, acceptance criteria, prioritization
+- **UX Designer** — Accessibility (WCAG 2.1 AA), interaction patterns, information hierarchy
+- **Security Auditor** — OWASP Top 10, auth flows, data exposure, input validation
+- **Production Engineer** — Quality gates, observability, deployment, performance budgets
+
+The output feeds directly into `/gsd:plan-phase`. Custom skills can be added to `templates/skills/`.
+
+---
+
 ## Why It Works
 
 ### Context Engineering
@@ -383,6 +449,8 @@ GSD handles it for you:
 | `STATE.md` | Decisions, blockers, position — memory across sessions |
 | `PLAN.md` | Atomic task with XML structure, verification steps |
 | `SUMMARY.md` | What happened, what changed, committed to history |
+| `RETROSPECTIVE.md` | What worked and what didn't — feeds into future planning |
+| `skills/` | Advisory role definitions (PM, UX, Security, Prod Eng) |
 | `todos/` | Captured ideas and tasks for later work |
 
 Size limits based on where Claude's quality degrades. Stay under, get consistent excellence.
@@ -457,12 +525,19 @@ You're never locked in. The system adapts.
 |---------|--------------|
 | `/gsd:new-project [--auto]` | Full initialization: questions → research → requirements → roadmap |
 | `/gsd:discuss-phase [N] [--auto]` | Capture implementation decisions before planning |
-| `/gsd:plan-phase [N] [--auto]` | Research + plan + verify for a phase |
+| `/gsd:plan-phase [N] [--auto] [--prd <file>]` | Research + plan + verify for a phase (PRD skips discuss) |
 | `/gsd:execute-phase <N>` | Execute all plans in parallel waves, verify when complete |
-| `/gsd:verify-work [N]` | Manual user acceptance testing ¹ |
+| `/gsd:verify-work [N]` | Manual user acceptance testing + quality gates ¹ |
 | `/gsd:audit-milestone` | Verify milestone achieved its definition of done |
 | `/gsd:complete-milestone` | Archive milestone, tag release |
 | `/gsd:new-milestone [name]` | Start next version: questions → research → requirements → roadmap |
+
+### Accelerators
+
+| Command | What it does |
+|---------|--------------|
+| `/gsd:consolidated-phase <N>` | Full phase in 3 steps: consensus+plan → execute+gate → ship |
+| `/gsd:advisory-consensus <N>` | Multi-perspective advisory feedback in one agent pass |
 
 ### Navigation
 
@@ -550,6 +625,7 @@ These spawn additional agents during planning/execution. They improve quality bu
 | `workflow.plan_check` | `true` | Verifies plans achieve phase goals before execution |
 | `workflow.verifier` | `true` | Confirms must-haves were delivered after execution |
 | `workflow.auto_advance` | `false` | Auto-chain discuss → plan → execute without stopping |
+| `workflow.consolidated` | `false` | Use consolidated 3-phase workflow instead of standard |
 
 Use `/gsd:settings` to toggle these, or override per-invocation:
 - `/gsd:plan-phase --skip-research`
@@ -561,6 +637,21 @@ Use `/gsd:settings` to toggle these, or override per-invocation:
 |---------|---------|------------------|
 | `parallelization.enabled` | `true` | Run independent plans simultaneously |
 | `planning.commit_docs` | `true` | Track `.planning/` in git |
+
+### Quality Gates
+
+Automate verification with your existing test infrastructure. Configure via `/gsd:settings` or directly in `.planning/config.json`.
+
+| Setting | Options | Default | What it does |
+|---------|---------|---------|--------------|
+| `quality_gates.enabled` | `off`, `warn`, `block` | `off` | Gate behavior on failure |
+| `quality_gates.commands` | string[] | `[]` | Commands to run (e.g. `["npm test", "npx tsc --noEmit"]`) |
+
+- **`off`** — No gates (default)
+- **`warn`** — Run gates, show results, continue on failure
+- **`block`** — Run gates, stop execution on failure
+
+Gates run automatically after phase verification and during `/gsd:verify-work`. Results append to `VERIFICATION.md`.
 
 ### Git Branching
 

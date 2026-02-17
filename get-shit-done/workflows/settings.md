@@ -28,6 +28,7 @@ Parse current values (default to `true` if not present):
 - `workflow.research` — spawn researcher during plan-phase
 - `workflow.plan_check` — spawn plan checker during plan-phase
 - `workflow.verifier` — spawn verifier during execute-phase
+- `workflow.consolidated` — use consolidated 3-phase workflow (default: `false`)
 - `model_profile` — which model each agent uses (default: `balanced`)
 - `git.branching_strategy` — branching approach (default: `"none"`)
 </step>
@@ -84,6 +85,15 @@ AskUserQuestion([
     ]
   },
   {
+    question: "Use consolidated 3-phase workflow? (consensus+plan → execute+gate → ship)",
+    header: "Workflow",
+    multiSelect: false,
+    options: [
+      { label: "Standard (Recommended)", description: "Discuss → Plan → Execute → Verify (4 steps, more control)" },
+      { label: "Consolidated", description: "Consensus+Plan → Execute+Gate → Ship (3 steps, fewer agents, lower cost)" }
+    ]
+  },
+  {
     question: "Git branching strategy?",
     header: "Branching",
     multiSelect: false,
@@ -92,9 +102,38 @@ AskUserQuestion([
       { label: "Per Phase", description: "Create branch for each phase (gsd/phase-{N}-{name})" },
       { label: "Per Milestone", description: "Create branch for entire milestone (gsd/{version}-{name})" }
     ]
+  },
+  {
+    question: "Run quality gate commands after execution? (e.g., npm test, npm run check)",
+    header: "Gates",
+    multiSelect: false,
+    options: [
+      { label: "Off", description: "No automated quality gates (default)" },
+      { label: "Warn", description: "Run commands, report results but don't block" },
+      { label: "Block", description: "Run commands, block phase completion on failure" }
+    ]
   }
 ])
 ```
+
+**If user selected "Warn" or "Block" for quality gates:**
+
+Follow up with:
+
+```
+AskUserQuestion([
+  {
+    question: "Which commands should run as quality gates? (comma-separated)",
+    header: "Commands",
+    multiSelect: false,
+    options: [
+      { label: "Other", description: "Type your commands (e.g., npm test, npm run check, npm run lint)" }
+    ]
+  }
+])
+```
+
+Parse the comma-separated response into an array of trimmed command strings.
 </step>
 
 <step name="update_config">
@@ -108,13 +147,23 @@ Merge new settings into existing config.json:
     "research": true/false,
     "plan_check": true/false,
     "verifier": true/false,
-    "auto_advance": true/false
+    "auto_advance": true/false,
+    "consolidated": true/false
   },
   "git": {
     "branching_strategy": "none" | "phase" | "milestone"
+  },
+  "quality_gates": {
+    "enabled": true/false,
+    "commands": ["cmd1", "cmd2", ...],
+    "fail_action": "warn" | "block"
   }
 }
 ```
+
+- If user selected "Off": `enabled: false`, `commands: []`, `fail_action: "warn"`
+- If user selected "Warn": `enabled: true`, `commands: [parsed commands]`, `fail_action: "warn"`
+- If user selected "Block": `enabled: true`, `commands: [parsed commands]`, `fail_action: "block"`
 
 Write updated config to `.planning/config.json`.
 </step>
@@ -155,7 +204,8 @@ Write `~/.gsd/defaults.json` with:
     "research": <current>,
     "plan_check": <current>,
     "verifier": <current>,
-    "auto_advance": <current>
+    "auto_advance": <current>,
+    "consolidated": <current>
   }
 }
 ```
@@ -176,7 +226,10 @@ Display:
 | Plan Checker         | {On/Off} |
 | Execution Verifier   | {On/Off} |
 | Auto-Advance         | {On/Off} |
+| Workflow Mode        | {Standard/Consolidated} |
 | Git Branching        | {None/Per Phase/Per Milestone} |
+| Quality Gates        | {Off/Warn/Block} |
+| Gate Commands        | {comma-separated list or "—"} |
 | Saved as Defaults    | {Yes/No} |
 
 These settings apply to future /gsd:plan-phase and /gsd:execute-phase runs.
@@ -193,8 +246,8 @@ Quick commands:
 
 <success_criteria>
 - [ ] Current config read
-- [ ] User presented with 6 settings (profile + 4 workflow toggles + git branching)
-- [ ] Config updated with model_profile, workflow, and git sections
+- [ ] User presented with 8 settings (profile + 4 workflow toggles + consolidated mode + git branching + quality gates)
+- [ ] Config updated with model_profile, workflow, git, and quality_gates sections
 - [ ] User offered to save as global defaults (~/.gsd/defaults.json)
 - [ ] Changes confirmed to user
 </success_criteria>

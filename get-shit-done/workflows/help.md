@@ -69,6 +69,18 @@ Help articulate your vision for a phase before planning.
 
 Usage: `/gsd:discuss-phase 2`
 
+**`/gsd:advisory-consensus <number>`**
+Run advisory skill perspectives before planning.
+
+- Loads PM, UX, Security, or custom skills into one agent
+- Produces acceptance criteria, UX flags, and security concerns
+- Creates CONTEXT.md — same output as discuss-phase but automated
+- One agent, multiple perspectives, one pass (efficient alternative to discuss-phase)
+- Custom skills: add `.md` files to `.planning/skills/`
+
+Usage: `/gsd:advisory-consensus 3`
+Usage: `/gsd:advisory-consensus 3 --skills product-manager,security-auditor`
+
 **`/gsd:research-phase <number>`**
 Comprehensive ecosystem research for niche/complex domains.
 
@@ -99,6 +111,8 @@ Create detailed execution plan for a specific phase.
 Usage: `/gsd:plan-phase 1`
 Result: Creates `.planning/phases/01-foundation/01-01-PLAN.md`
 
+**PRD Express Path:** Pass `--prd path/to/requirements.md` to skip discuss-phase entirely. Your PRD becomes locked decisions in CONTEXT.md. Useful when you already have clear acceptance criteria.
+
 ### Execution
 
 **`/gsd:execute-phase <phase-number>`**
@@ -110,6 +124,19 @@ Execute all plans in a phase.
 - Updates REQUIREMENTS.md, ROADMAP.md, STATE.md
 
 Usage: `/gsd:execute-phase 5`
+
+### Consolidated Workflow
+
+**`/gsd:consolidated-phase <number>`**
+Run a complete phase using the consolidated 3-phase workflow.
+
+- Combines advisory consensus + planning into one agent spawn
+- Self-verifies plans (no separate plan-checker)
+- Runs ship-readiness gate (verification + quality gates combined)
+- 40-50% fewer agent spawns than standard workflow
+- Enable via `/gsd:settings` → Workflow → Consolidated
+
+Usage: `/gsd:consolidated-phase 3`
 
 ### Quick Mode
 
@@ -299,6 +326,8 @@ Configure workflow toggles and model profile interactively.
 - Select model profile (quality/balanced/budget)
 - Updates `.planning/config.json`
 
+Includes quality gates configuration — run shell commands (tests, lints, type checks) after execution with warn or block behavior.
+
 Usage: `/gsd:settings`
 
 **`/gsd:set-profile <profile>`**
@@ -351,10 +380,14 @@ Usage: `/gsd:join-discord`
 ├── PROJECT.md            # Project vision
 ├── ROADMAP.md            # Current phase breakdown
 ├── STATE.md              # Project memory & context
+├── RETROSPECTIVE.md      # Living retrospective (updated per milestone)
 ├── config.json           # Workflow mode & gates
 ├── todos/                # Captured ideas and tasks
 │   ├── pending/          # Todos waiting to be worked on
 │   └── done/             # Completed todos
+├── skills/               # Custom advisory skill definitions
+│   ├── product-manager.md
+│   └── domain-expert.md
 ├── debug/                # Active debug sessions
 │   └── resolved/         # Archived resolved issues
 ├── milestones/
@@ -421,6 +454,25 @@ Example config:
   "planning": {
     "commit_docs": false,
     "search_gitignored": true
+  }
+}
+```
+
+**Quality Gates** (configured via `/gsd:settings`)
+
+Run shell commands (tests, lints, type checks) automatically after phase execution and verification:
+
+- `quality_gates.enabled` — `true` to activate (default: `false`)
+- `quality_gates.commands` — array of shell commands to run (e.g., `["npm test", "npm run lint"]`)
+- `quality_gates.fail_action` — `"warn"` (report but continue) or `"block"` (prevent phase completion)
+
+Example:
+```json
+{
+  "quality_gates": {
+    "enabled": true,
+    "commands": ["npm run test", "npm run check", "npm run lint"],
+    "fail_action": "block"
   }
 }
 ```
