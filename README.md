@@ -2,7 +2,7 @@
 
 # GET SHIT DONE
 
-**A battle-tested fork of [GSD](https://github.com/glittercowboy/get-shit-done) — meta-prompting, context engineering and spec-driven development for Claude Code, OpenCode, and Gemini CLI.**
+**An opinionated fork of [GSD](https://github.com/glittercowboy/get-shit-done) — meta-prompting, context engineering and spec-driven development for Claude Code, OpenCode, and Gemini CLI.**
 
 **Solves context rot — the quality degradation that happens as Claude fills its context window.**
 
@@ -46,7 +46,7 @@ The original GSD is available at [glittercowboy/get-shit-done](https://github.co
 
 ## Why This Fork
 
-I used GSD to build [Weaveto.do](https://github.com/smledbetter/Weaveto.do) — 12,000 lines of TypeScript, 491 tests, real end-to-end encryption. GSD's core workflow is excellent. But shipping a real product with it exposed friction points that the standard workflow doesn't address yet. This fork adds the features I needed.
+I used GSD to build [Weaveto.do](https://github.com/smledbetter/Weaveto.do) — 12,000 lines of TypeScript, 491 tests, end-to-end encryption. GSD's core workflow is excellent. But building a non-trivial project with it exposed friction points that the standard workflow doesn't address yet. This fork adds the features I needed.
 
 ---
 
@@ -69,7 +69,7 @@ The lessons from that build:
 | 4 phases × 2+ agents each is often too many | **Consolidated Workflow** — 3 phases, ~50% fewer agent spawns, same quality |
 | Running phases one at a time is tedious | **Sprint** — `/gsd:sprint` runs all remaining phases unattended with failure recovery |
 
-These aren't theoretical improvements. They came from shipping a real product with GSD and fixing the things that slowed us down. The core insight from the article: **the bottleneck isn't AI capability — it's coordination.** Every feature above reduces coordination overhead.
+These came from building a non-trivial project with GSD and fixing the things that slowed us down. The core insight from the article: **the bottleneck isn't AI capability — it's coordination.** Every feature above reduces coordination overhead.
 
 ---
 
@@ -888,7 +888,7 @@ This removes all GSD commands, agents, hooks, and settings while preserving your
 
 ## Upstream & Community
 
-This fork is based on [glittercowboy/get-shit-done](https://github.com/glittercowboy/get-shit-done) — the original GSD system available via `npx get-shit-done-cc@latest`. This fork adds features battle-tested while building [Weaveto.do](https://github.com/smledbetter/Weaveto.do).
+This fork is based on [glittercowboy/get-shit-done](https://github.com/glittercowboy/get-shit-done) — the original GSD system available via `npx get-shit-done-cc@latest`. This fork adds features developed while building [Weaveto.do](https://github.com/smledbetter/Weaveto.do).
 
 | Project | Description |
 |---------|-------------|
