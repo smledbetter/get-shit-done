@@ -86,6 +86,18 @@ grep -n "type=\"checkpoint" .planning/phases/XX-name/{phase}-{plan}-PLAN.md
 
 **Pattern A:** init_agent_tracking → spawn Task(subagent_type="gsd-executor", model=executor_model) with prompt: execute plan at [path], autonomous, all tasks + SUMMARY + commit, follow deviation/auth rules, report: plan name, tasks, SUMMARY path, commit hash → track agent_id → wait → update tracking → report.
 
+**Pattern A fallback:** After the subagent returns, verify SUMMARY.md was created:
+```bash
+ls .planning/phases/XX-name/{phase}-{plan}-SUMMARY.md 2>/dev/null
+```
+If SUMMARY.md is **missing**, the subagent failed to complete bookkeeping. Fall back to inline execution:
+1. Check what work the subagent DID complete (look for commits with `git log --oneline --grep="{phase}-{plan}"`)
+2. If code commits exist but SUMMARY is missing: skip to `create_summary` step (subagent did the code work but not the bookkeeping)
+3. If no commits exist: fall back to Pattern C entirely — execute the full plan inline starting from `execute` step
+4. Either way, continue through ALL subsequent bookkeeping steps: `create_summary` → `update_current_position` → `update_roadmap` → `update_requirements` → `git_commit_metadata`
+
+This ensures bookkeeping always happens regardless of subagent success.
+
 **Pattern B:** Execute segment-by-segment. Autonomous segments: spawn subagent for assigned tasks only (no SUMMARY/commit). Checkpoints: main context. After all segments: aggregate, create SUMMARY, commit. See segment_execution.
 
 **Pattern C:** Execute in main using standard flow (step name="execute").
