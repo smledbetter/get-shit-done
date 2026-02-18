@@ -110,6 +110,12 @@ node ~/.claude/get-shit-done/bin/gsd-tools.cjs config-set workflow.research fals
 ```
 
 ```bash
+# Archive old research to prevent context pollution from previous milestones
+if ls .planning/research/*.md 1>/dev/null 2>&1; then
+  archive_dir=".planning/research/archive"
+  mkdir -p "$archive_dir"
+  mv .planning/research/*.md "$archive_dir/" 2>/dev/null
+fi
 mkdir -p .planning/research
 ```
 
