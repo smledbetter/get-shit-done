@@ -540,7 +540,7 @@ GSD parses Claude Code's JSONL session logs — the same files Claude writes for
 - **New work %** — actual thinking vs context re-loading (typically 4-8% is new work)
 
 **When it runs:**
-- **Automatically** after each phase — snapshots saved to `.planning/metrics/phase-{N}.json`
+- **Automatically** after each phase (best-effort) — snapshots saved to `.planning/metrics/phase-{N}.json` when session logs and git commit boundaries are available
 - **Automatically** at milestone completion — aggregated into RETROSPECTIVE.md with verified tables
 - **On demand** — `/gsd:metrics` for current status at any time
 
@@ -734,11 +734,11 @@ GSD stores project settings in `.planning/config.json`. Configure during `/gsd:n
 
 Control which Claude model each agent uses. Balance quality vs token spend.
 
-| Profile | Planning | Execution | Verification |
-|---------|----------|-----------|--------------|
-| `quality` | Opus | Opus | Sonnet |
-| `balanced` (default) | Opus | Sonnet | Sonnet |
-| `budget` | Sonnet | Sonnet | Haiku |
+| Profile | Planner | Roadmapper | Executor | Researcher | Plan Checker | Debugger | Mapper | Verifier |
+|---------|---------|------------|----------|------------|--------------|----------|--------|----------|
+| `quality` | Opus | Opus | Opus | Opus | Opus | Opus | Sonnet | Sonnet |
+| `balanced` (default) | Opus | Sonnet | Sonnet | Sonnet | Sonnet | Sonnet | Haiku | Sonnet |
+| `budget` | Sonnet | Sonnet | Sonnet | Haiku | Haiku | Sonnet | Haiku | Haiku |
 
 Switch profiles:
 ```
