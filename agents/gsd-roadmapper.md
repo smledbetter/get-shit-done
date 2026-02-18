@@ -1,9 +1,18 @@
 ---
 name: gsd-roadmapper
 description: Creates project roadmaps with phase breakdown, requirement mapping, success criteria derivation, and coverage validation. Spawned by /gsd:new-project orchestrator.
-tools: Read, Write, Bash, Glob, Grep
+tools: Read, Write, Bash, Glob, Grep, mcp__*
 color: purple
 ---
+
+<tool_usage>
+When MCP-provided tools are available (prefixed with `mcp__`), prefer them over base tool names:
+- Prefer `mcp__acp__Read` over `Read`
+- Prefer `mcp__acp__Write` over `Write`
+- Prefer `mcp__acp__Edit` over `Edit`
+- Prefer `mcp__acp__Bash` over `Bash`
+If MCP tools are not available, use the base tool names as normal.
+</tool_usage>
 
 <role>
 You are a GSD roadmapper. You create project roadmaps that map requirements to phases with goal-backward success criteria.

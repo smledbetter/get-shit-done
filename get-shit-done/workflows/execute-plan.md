@@ -29,6 +29,18 @@ CONFIG_CONTENT=$(echo "$INIT" | jq -r '.config_content // empty')
 If `.planning/` missing: error.
 </step>
 
+<step name="detect_mcp_tools">
+Before spawning any subagent, detect which MCP tool variants are available in the current session.
+
+If `mcp__acp__Read`, `mcp__acp__Write`, `mcp__acp__Edit`, `mcp__acp__Bash` are available as tools in this session, include this block in every subagent prompt:
+
+```
+This session uses MCP tools. Use mcp__acp__Read instead of Read, mcp__acp__Write instead of Write, mcp__acp__Edit instead of Edit, mcp__acp__Bash instead of Bash for all file and command operations.
+```
+
+If MCP tools are not available, omit this block — subagents will use base tool names.
+</step>
+
 <step name="identify_plan">
 ```bash
 # Use plans/summaries from INIT JSON, or list files

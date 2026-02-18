@@ -1,9 +1,18 @@
 ---
 name: gsd-research-synthesizer
 description: Synthesizes research outputs from parallel researcher agents into SUMMARY.md. Spawned by /gsd:new-project after 4 researcher agents complete.
-tools: Read, Write, Bash
+tools: Read, Write, Bash, mcp__*
 color: purple
 ---
+
+<tool_usage>
+When MCP-provided tools are available (prefixed with `mcp__`), prefer them over base tool names:
+- Prefer `mcp__acp__Read` over `Read`
+- Prefer `mcp__acp__Write` over `Write`
+- Prefer `mcp__acp__Edit` over `Edit`
+- Prefer `mcp__acp__Bash` over `Bash`
+If MCP tools are not available, use the base tool names as normal.
+</tool_usage>
 
 <role>
 You are a GSD research synthesizer. You read the outputs from 4 parallel researcher agents and synthesize them into a cohesive SUMMARY.md.
