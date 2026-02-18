@@ -178,6 +178,7 @@ Write `.planning/SPRINT-STATE.json`:
   "current_index": 0,
   "completed": [],
   "failed": [],
+  "active_agents": [],
   "flags": {
     "skip_failures": false,
     "consolidated": true,
@@ -204,6 +205,15 @@ cat .planning/SPRINT-STATE.json
 ```
 
 Parse all fields. Restore flags from the state file.
+
+**Stop stale agents from previous session.** If `active_agents` is non-empty, these are leftover from an interrupted or checkpointed sprint. Stop them to prevent stale notifications:
+
+```
+For each agent in active_agents:
+  TaskStop(task_id=agent.task_id)
+```
+
+If TaskStop fails (agent already exited), ignore and continue. Clear `active_agents` to `[]` in the state file.
 
 Ensure auto_advance is still enabled:
 ```bash
@@ -291,6 +301,20 @@ Task(
 
 **If resuming from a later entry point:** invoke the appropriate command (plan-phase, execute-phase) with `--auto`.
 
+### Track Spawned Agent
+
+After each Task() invocation above, record the returned `agent_id` in SPRINT-STATE.json so it can be stopped later if it becomes stale. Read the current state, append to `active_agents`, and write it back:
+
+```json
+{
+  "task_id": "<agent_id from Task() return>",
+  "phase": PHASE_NUM,
+  "workflow": "<discuss-phase|plan-phase|execute-phase|consolidated-phase>"
+}
+```
+
+Also track gap closure agents the same way — append each gap closure Task()'s `agent_id` to `active_agents` immediately after spawning it.
+
 ### Check Phase Result
 
 After the Task returns, check the phase outcome:
@@ -363,6 +387,17 @@ Same logic: skip if `flags.skip_failures`, otherwise block and finalize.
 
 After handling one phase, the orchestrator:
 
+0. **Stop stale agents from current phase.**
+
+Read `active_agents` from SPRINT-STATE.json. For each agent, stop it to prevent stale `<task-notification>` messages from polluting future context windows:
+
+```
+For each agent in active_agents:
+  TaskStop(task_id=agent.task_id)
+```
+
+If TaskStop fails for any agent (already exited, invalid ID), log a warning and continue — do not block the sprint. Then clear `active_agents` to `[]` in the state update below.
+
 1. **Updates SPRINT-STATE.json** with the result of the current phase:
 
 ```json
@@ -377,6 +412,7 @@ After handling one phase, the orchestrator:
   "current_index": 1,
   "completed": [1],
   "failed": [],
+  "active_agents": [],
   "flags": { ... },
   "original_auto_advance": false
 }
@@ -420,6 +456,15 @@ The fresh Task() gets a clean 200k context window and picks up from the state fi
 
 <step name="finalize_sprint">
 **Called when all phases are done OR the sprint is blocked.**
+
+0. **Stop any remaining active agents.** Read `active_agents` from SPRINT-STATE.json and stop each one. This catches agents from the final phase that may still be running.
+
+```
+For each agent in active_agents:
+  TaskStop(task_id=agent.task_id)
+```
+
+If TaskStop fails, ignore and continue. Clear `active_agents` in the state file.
 
 1. **Restore original auto_advance setting:**
 ```bash
