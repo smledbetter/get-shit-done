@@ -113,9 +113,10 @@ Execute each wave in sequence. Within a wave: parallel if `PARALLELIZATION=true`
 
    ```
    Task(
-     subagent_type="gsd-executor",
+     subagent_type="general-purpose",
      model="{executor_model}",
-     prompt="
+     prompt="First, read ~/.claude/agents/gsd-executor.md for your role and instructions.
+
        <objective>
        Execute plan {plan_number} of phase {phase_number}-{phase_name}.
        Commit each task atomically. Create SUMMARY.md. Update STATE.md and ROADMAP.md.
@@ -310,14 +311,16 @@ PHASE_REQ_IDS=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs roadmap get-phase
 
 ```
 Task(
-  prompt="Verify phase {phase_number} goal achievement.
+  prompt="First, read ~/.claude/agents/gsd-verifier.md for your role and instructions.
+
+Verify phase {phase_number} goal achievement.
 Phase directory: {phase_dir}
 Phase goal: {goal from ROADMAP.md}
 Phase requirement IDs: {phase_req_ids}
 Check must_haves against actual codebase.
 Cross-reference requirement IDs from PLAN frontmatter against REQUIREMENTS.md — every ID MUST be accounted for.
 Create VERIFICATION.md.",
-  subagent_type="gsd-verifier",
+  subagent_type="general-purpose",
   model="{verifier_model}"
 )
 ```

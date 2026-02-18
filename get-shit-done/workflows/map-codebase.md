@@ -84,15 +84,15 @@ Continue to spawn_agents.
 <step name="spawn_agents">
 Spawn 4 parallel gsd-codebase-mapper agents.
 
-Use Task tool with `subagent_type="gsd-codebase-mapper"`, `model="{mapper_model}"`, and `run_in_background=true` for parallel execution.
+Use Task tool with `subagent_type="general-purpose"`, `model="{mapper_model}"`, and `run_in_background=true` for parallel execution.
 
-**CRITICAL:** Use the dedicated `gsd-codebase-mapper` agent, NOT `Explore`. The mapper agent writes documents directly.
+**CRITICAL:** Each agent prompt MUST start with `"First, read ~/.claude/agents/gsd-codebase-mapper.md for your role and instructions."` — this loads the mapper role. The mapper agent writes documents directly.
 
 **Agent 1: Tech Focus**
 
 Task tool parameters:
 ```
-subagent_type: "gsd-codebase-mapper"
+subagent_type: "general-purpose"
 model: "{mapper_model}"
 run_in_background: true
 description: "Map codebase tech stack"
@@ -100,6 +100,8 @@ description: "Map codebase tech stack"
 
 Prompt:
 ```
+First, read ~/.claude/agents/gsd-codebase-mapper.md for your role and instructions.
+
 Focus: tech
 
 Analyze this codebase for technology stack and external integrations.
@@ -115,7 +117,7 @@ Explore thoroughly. Write documents directly using templates. Return confirmatio
 
 Task tool parameters:
 ```
-subagent_type: "gsd-codebase-mapper"
+subagent_type: "general-purpose"
 model: "{mapper_model}"
 run_in_background: true
 description: "Map codebase architecture"
@@ -123,6 +125,8 @@ description: "Map codebase architecture"
 
 Prompt:
 ```
+First, read ~/.claude/agents/gsd-codebase-mapper.md for your role and instructions.
+
 Focus: arch
 
 Analyze this codebase architecture and directory structure.
@@ -138,7 +142,7 @@ Explore thoroughly. Write documents directly using templates. Return confirmatio
 
 Task tool parameters:
 ```
-subagent_type: "gsd-codebase-mapper"
+subagent_type: "general-purpose"
 model: "{mapper_model}"
 run_in_background: true
 description: "Map codebase conventions"
@@ -146,6 +150,8 @@ description: "Map codebase conventions"
 
 Prompt:
 ```
+First, read ~/.claude/agents/gsd-codebase-mapper.md for your role and instructions.
+
 Focus: quality
 
 Analyze this codebase for coding conventions and testing patterns.
@@ -161,7 +167,7 @@ Explore thoroughly. Write documents directly using templates. Return confirmatio
 
 Task tool parameters:
 ```
-subagent_type: "gsd-codebase-mapper"
+subagent_type: "general-purpose"
 model: "{mapper_model}"
 run_in_background: true
 description: "Map codebase concerns"
@@ -169,6 +175,8 @@ description: "Map codebase concerns"
 
 Prompt:
 ```
+First, read ~/.claude/agents/gsd-codebase-mapper.md for your role and instructions.
+
 Focus: concerns
 
 Analyze this codebase for technical debt, known issues, and areas of concern.

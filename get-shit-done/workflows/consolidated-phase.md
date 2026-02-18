@@ -147,7 +147,7 @@ If enabled, run each command and include results in VERIFICATION.md under a "## 
 Create VERIFICATION.md with both verification results and quality gate results.
 Status is only "passed" if BOTH verification and quality gates pass.
 """,
-  subagent_type="gsd-verifier",
+  subagent_type="general-purpose",
   model="{verifier_model}",
   description="Ship-Readiness Gate Phase {phase}"
 )

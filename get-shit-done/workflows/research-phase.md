@@ -46,7 +46,9 @@ node ~/.claude/get-shit-done/bin/gsd-tools.cjs state-snapshot | jq '.decisions'
 
 ```
 Task(
-  prompt="<objective>
+  prompt="First, read ~/.claude/agents/gsd-phase-researcher.md for your role and instructions.
+
+<objective>
 Research implementation approach for Phase {phase}: {name}
 </objective>
 
@@ -60,7 +62,7 @@ Phase context: {context_md}
 <output>
 Write to: .planning/phases/${PHASE}-{slug}/${PHASE}-RESEARCH.md
 </output>",
-  subagent_type="gsd-phase-researcher",
+  subagent_type="general-purpose",
   model="{researcher_model}"
 )
 ```

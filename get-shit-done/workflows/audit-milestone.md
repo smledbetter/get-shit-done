@@ -61,7 +61,9 @@ Extract `MILESTONE_REQ_IDS` from REQUIREMENTS.md traceability table — all REQ-
 
 ```
 Task(
-  prompt="Check cross-phase integration and E2E flows.
+  prompt="First, read ~/.claude/agents/gsd-integration-checker.md for your role and instructions.
+
+Check cross-phase integration and E2E flows.
 
 Phases: {phase_dirs}
 Phase exports: {from SUMMARYs}
@@ -73,7 +75,7 @@ Milestone Requirements:
 MUST map each integration finding to affected requirement IDs where applicable.
 
 Verify cross-phase wiring and E2E user flows.",
-  subagent_type="gsd-integration-checker",
+  subagent_type="general-purpose",
   model="{integration_checker_model}"
 )
 ```

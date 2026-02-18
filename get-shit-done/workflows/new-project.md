@@ -708,7 +708,8 @@ Use template: ~/.claude/get-shit-done/templates/research-project/PITFALLS.md
 After all 4 agents complete, spawn synthesizer to create SUMMARY.md:
 
 ```
-Task(prompt="
+Task(prompt="First, read ~/.claude/agents/gsd-research-synthesizer.md for your role and instructions.
+
 <task>
 Synthesize research outputs into SUMMARY.md.
 </task>
@@ -726,7 +727,7 @@ Write to: .planning/research/SUMMARY.md
 Use template: ~/.claude/get-shit-done/templates/research-project/SUMMARY.md
 Commit after writing.
 </output>
-", subagent_type="gsd-research-synthesizer", model="{synthesizer_model}", description="Synthesize research")
+", subagent_type="general-purpose", model="{synthesizer_model}", description="Synthesize research")
 ```
 
 Display research complete banner and key findings:
@@ -905,7 +906,8 @@ Display stage banner:
 Spawn gsd-roadmapper agent with context:
 
 ```
-Task(prompt="
+Task(prompt="First, read ~/.claude/agents/gsd-roadmapper.md for your role and instructions.
+
 <planning_context>
 
 **Project:**
@@ -933,7 +935,7 @@ Create roadmap:
 
 Write files first, then return. This ensures artifacts persist even if context is lost.
 </instructions>
-", subagent_type="gsd-roadmapper", model="{roadmapper_model}", description="Create roadmap")
+", subagent_type="general-purpose", model="{roadmapper_model}", description="Create roadmap")
 ```
 
 **Handle roadmapper return:**
@@ -1001,7 +1003,8 @@ Use AskUserQuestion:
 - Get user's adjustment notes
 - Re-spawn roadmapper with revision context:
   ```
-  Task(prompt="
+  Task(prompt="First, read ~/.claude/agents/gsd-roadmapper.md for your role and instructions.
+
   <revision>
   User feedback on roadmap:
   [user's notes]
@@ -1011,7 +1014,7 @@ Use AskUserQuestion:
   Update the roadmap based on feedback. Edit files in place.
   Return ROADMAP REVISED with changes made.
   </revision>
-  ", subagent_type="gsd-roadmapper", model="{roadmapper_model}", description="Revise roadmap")
+  ", subagent_type="general-purpose", model="{roadmapper_model}", description="Revise roadmap")
   ```
 - Present revised roadmap
 - Loop until user approves

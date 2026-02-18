@@ -425,11 +425,12 @@ Display:
 ◆ Spawning planner for gap closure...
 ```
 
-Spawn gsd-planner in --gaps mode:
+Spawn planner in --gaps mode:
 
 ```
 Task(
-  prompt="""
+  prompt="""First, read ~/.claude/agents/gsd-planner.md for your role and instructions.
+
 <planning_context>
 
 **Phase:** {phase_number}
@@ -451,7 +452,7 @@ Output consumed by /gsd:execute-phase
 Plans must be executable prompts.
 </downstream_consumer>
 """,
-  subagent_type="gsd-planner",
+  subagent_type="general-purpose",
   model="{planner_model}",
   description="Plan gap fixes for Phase {phase}"
 )
@@ -480,7 +481,8 @@ Spawn gsd-plan-checker:
 
 ```
 Task(
-  prompt="""
+  prompt="""First, read ~/.claude/agents/gsd-plan-checker.md for your role and instructions.
+
 <verification_context>
 
 **Phase:** {phase_number}
@@ -497,7 +499,7 @@ Return one of:
 - ## ISSUES FOUND — structured issue list
 </expected_output>
 """,
-  subagent_type="gsd-plan-checker",
+  subagent_type="general-purpose",
   model="{checker_model}",
   description="Verify Phase {phase} fix plans"
 )
@@ -519,7 +521,8 @@ Spawn gsd-planner with revision context:
 
 ```
 Task(
-  prompt="""
+  prompt="""First, read ~/.claude/agents/gsd-planner.md for your role and instructions.
+
 <revision_context>
 
 **Phase:** {phase_number}
@@ -538,7 +541,7 @@ Read existing PLAN.md files. Make targeted updates to address checker issues.
 Do NOT replan from scratch unless issues are fundamental.
 </instructions>
 """,
-  subagent_type="gsd-planner",
+  subagent_type="general-purpose",
   model="{planner_model}",
   description="Revise Phase {phase} plans"
 )

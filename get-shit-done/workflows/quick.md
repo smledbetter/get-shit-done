@@ -89,7 +89,8 @@ Store `$QUICK_DIR` for use in orchestration.
 
 ```
 Task(
-  prompt="
+  prompt="First, read ~/.claude/agents/gsd-planner.md for your role and instructions.
+
 <planning_context>
 
 **Mode:** ${FULL_MODE ? 'quick-full' : 'quick'}
@@ -115,7 +116,7 @@ Write plan to: ${QUICK_DIR}/${next_num}-PLAN.md
 Return: ## PLANNING COMPLETE with plan path
 </output>
 ",
-  subagent_type="gsd-planner",
+  subagent_type="general-purpose",
   model="{planner_model}",
   description="Quick plan: ${DESCRIPTION}"
 )
@@ -177,8 +178,8 @@ Skip: context compliance (no CONTEXT.md), cross-plan deps (single plan), ROADMAP
 
 ```
 Task(
-  prompt=checker_prompt,
-  subagent_type="gsd-plan-checker",
+  prompt="First, read ~/.claude/agents/gsd-plan-checker.md for your role and instructions.\n\n" + checker_prompt,
+  subagent_type="general-purpose",
   model="{checker_model}",
   description="Check quick plan: ${DESCRIPTION}"
 )
@@ -244,7 +245,8 @@ Spawn gsd-executor with plan reference:
 
 ```
 Task(
-  prompt="
+  prompt="First, read ~/.claude/agents/gsd-executor.md for your role and instructions.
+
 Execute quick task ${next_num}.
 
 Plan: @${QUICK_DIR}/${next_num}-PLAN.md
@@ -257,7 +259,7 @@ Project state: @.planning/STATE.md
 - Do NOT update ROADMAP.md (quick tasks are separate from planned phases)
 </constraints>
 ",
-  subagent_type="gsd-executor",
+  subagent_type="general-purpose",
   model="{executor_model}",
   description="Execute: ${DESCRIPTION}"
 )
@@ -291,12 +293,14 @@ Display banner:
 
 ```
 Task(
-  prompt="Verify quick task goal achievement.
+  prompt="First, read ~/.claude/agents/gsd-verifier.md for your role and instructions.
+
+Verify quick task goal achievement.
 Task directory: ${QUICK_DIR}
 Task goal: ${DESCRIPTION}
 Plan: @${QUICK_DIR}/${next_num}-PLAN.md
 Check must_haves against actual codebase. Create VERIFICATION.md at ${QUICK_DIR}/${next_num}-VERIFICATION.md.",
-  subagent_type="gsd-verifier",
+  subagent_type="general-purpose",
   model="{verifier_model}",
   description="Verify: ${DESCRIPTION}"
 )

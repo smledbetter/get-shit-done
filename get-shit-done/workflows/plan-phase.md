@@ -370,8 +370,8 @@ IMPORTANT: Plans MUST honor user decisions. Flag as issue if plans contradict.
 
 ```
 Task(
-  prompt=checker_prompt,
-  subagent_type="gsd-plan-checker",
+  prompt="First, read ~/.claude/agents/gsd-plan-checker.md for your role and instructions.\n\n" + checker_prompt,
+  subagent_type="general-purpose",
   model="{checker_model}",
   description="Verify Phase {phase} plans"
 )

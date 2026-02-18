@@ -5075,13 +5075,37 @@ function findPhaseInternal(cwd, phase) {
   const phasesDir = path.join(cwd, ".planning", "phases");
   const normalized = normalizePhaseName(phase);
 
-  // Search current phases first
+  // Search current phases first (directory exists on disk)
   const current = searchPhaseInDir(
     phasesDir,
     path.join(".planning", "phases"),
     normalized,
   );
   if (current) return current;
+
+  // Phase directory doesn't exist — check ROADMAP.md and create it
+  const roadmapPhase = getRoadmapPhaseInternal(cwd, phase);
+  if (roadmapPhase && roadmapPhase.found) {
+    const slug = generateSlugInternal(roadmapPhase.phase_name);
+    const padded = roadmapPhase.phase_number.toString().padStart(2, "0");
+    const dirName = slug ? `${padded}-${slug}` : padded;
+    const dirPath = path.join(phasesDir, dirName);
+    fs.mkdirSync(dirPath, { recursive: true });
+    fs.writeFileSync(path.join(dirPath, ".gitkeep"), "");
+    return {
+      found: true,
+      directory: path.join(".planning", "phases", dirName),
+      phase_number: roadmapPhase.phase_number,
+      phase_name: roadmapPhase.phase_name,
+      phase_slug: slug,
+      plans: [],
+      summaries: [],
+      incomplete_plans: [],
+      has_research: false,
+      has_context: false,
+      has_verification: false,
+    };
+  }
 
   // Search archived milestone phases (newest first)
   const milestonesDir = path.join(cwd, ".planning", "milestones");
